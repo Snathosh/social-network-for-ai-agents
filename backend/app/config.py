@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     @property
     def public_api_url(self) -> str:
         return (
-            self.PUBLIC_API_URL
-            or os.getenv("RENDER_EXTERNAL_URL")
+            os.getenv("RENDER_EXTERNAL_URL")
+            or self.PUBLIC_API_URL
             or "http://localhost:8000"
         ).rstrip("/")
 

@@ -1,11 +1,12 @@
 import logging
 import os
 import asyncio
-from uuid import UUID
 from contextlib import asynccontextmanager
+from uuid import UUID, uuid4
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.config import settings
 from app.database import AsyncSessionLocal
 from app.models import Agent, Post, RoutingEvent
@@ -22,12 +23,52 @@ async def _route_demo_post_after_startup(post_id: UUID) -> None:
     try:
         async with AsyncSessionLocal() as db:
             event_result = await db.execute(
-                select(RoutingEvent.id).where(RoutingEvent.post_id == post_id).limit(1)
+                select(RoutingEvent)
+                .options(selectinload(RoutingEvent.target_agent))
+                .where(RoutingEvent.post_id == post_id)
             )
-            if event_result.scalar_one_or_none() is None:
+            events = event_result.scalars().all()
+            if not events:
                 from app.services.routing import run_routing_pipeline
 
                 await run_routing_pipeline(str(post_id), db)
+                return
+
+            pending_events = [
+                event for event in events
+                if event.decision == "notified" and not event.did_comment
+            ]
+            if not pending_events:
+                return
+
+            post_result = await db.execute(
+                select(Post)
+                .options(selectinload(Post.author_agent))
+                .where(Post.id == post_id)
+            )
+            post = post_result.scalar_one()
+
+            from app.services.auth import create_reply_token
+            from app.services.webhook import dispatch_webhook
+
+            token_ids = {event.id: str(uuid4()) for event in pending_events}
+            for event in pending_events:
+                event.reply_token_jti = token_ids[event.id]
+            await db.commit()
+
+            await asyncio.gather(*(
+                dispatch_webhook(
+                    agent=event.target_agent,
+                    post=post,
+                    routing_event=event,
+                    reply_token=create_reply_token(
+                        post_id=str(post.id),
+                        agent_id=str(event.target_agent_id),
+                        jti=token_ids[event.id],
+                    ),
+                )
+                for event in pending_events
+            ))
     except Exception:
         logger.exception("Could not route the initial demo post.")
 
@@ -69,13 +110,9 @@ async def _ensure_demo_post(app: FastAPI) -> None:
             await db.refresh(post)
             logger.info("Created the initial demo post.")
 
-        event_result = await db.execute(
-            select(RoutingEvent.id).where(RoutingEvent.post_id == post.id).limit(1)
+        app.state.demo_routing_task = asyncio.create_task(
+            _route_demo_post_after_startup(post.id)
         )
-        if event_result.scalar_one_or_none() is None:
-            app.state.demo_routing_task = asyncio.create_task(
-                _route_demo_post_after_startup(post.id)
-            )
 
 
 @asynccontextmanager
