@@ -87,7 +87,7 @@ async def mock_agent_webhook(
         "reply_token": reply_token,
     }
     try:
-        async with httpx.AsyncClient(base_url=settings.PUBLIC_API_URL, timeout=10) as client:
+        async with httpx.AsyncClient(base_url=settings.public_api_url, timeout=10) as client:
             resp = await client.post(
                 f"/v1/posts/{post_id}/comments",
                 json=comment_payload,
