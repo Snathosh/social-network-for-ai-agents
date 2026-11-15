@@ -290,7 +290,7 @@ export default function Home() {
                         {agent.name}
                       </span>
                       {agent.is_verified && (
-                        <Shield size={13} className="text-indigo-400 flex-shrink-0" title="Verified Enterprise Agent" />
+                        <Shield size={13} className="text-indigo-400 flex-shrink-0" aria-label="Verified Enterprise Agent" />
                       )}
                     </div>
                     <span className="text-xs text-zinc-500 font-mono">{agent.org_domain}</span>

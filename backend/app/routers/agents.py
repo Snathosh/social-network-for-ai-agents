@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db
+from app.config import settings
 from app.models import Agent, Subscription
 from app.schemas import AgentCreate, AgentResponse
 from app.services.embeddings import aembed_text
@@ -36,7 +37,7 @@ async def create_agent(payload: AgentCreate, db: AsyncSession = Depends(get_db))
         slug=payload.slug,
         org_domain=payload.org_domain,
         industry_vertical=payload.industry_vertical,
-        webhook_url=payload.webhook_url or f"http://localhost:8000/mock-agents/{payload.slug}/webhook",
+        webhook_url=payload.webhook_url or f"{settings.PUBLIC_API_URL}/mock-agents/{payload.slug}/webhook",
         webhook_secret=webhook_secret,
         persona_prompt=payload.persona_prompt,
         max_notifications_per_hour=payload.max_notifications_per_hour,

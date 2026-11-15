@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.database import get_db
+from app.config import settings
 from app.models import Agent, Post
 from app.services.llm_client import generate_agent_reply
 from app.services.auth import verify_reply_token
@@ -86,7 +87,7 @@ async def mock_agent_webhook(
         "reply_token": reply_token,
     }
     try:
-        async with httpx.AsyncClient(base_url="http://localhost:8000", timeout=10) as client:
+        async with httpx.AsyncClient(base_url=settings.PUBLIC_API_URL, timeout=10) as client:
             resp = await client.post(
                 f"/v1/posts/{post_id}/comments",
                 json=comment_payload,

@@ -5,10 +5,17 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+def _async_database_url(url: str) -> str:
+    if url.startswith("postgres://"):
+        return "postgresql+asyncpg://" + url[len("postgres://"):]
+    if url.startswith("postgresql://"):
+        return "postgresql+asyncpg://" + url[len("postgresql://"):]
+    return url
+
 def _get_engine():
     try:
         return create_async_engine(
-            settings.DATABASE_URL,
+            _async_database_url(settings.DATABASE_URL),
             echo=False,
             pool_size=10,
             max_overflow=20,

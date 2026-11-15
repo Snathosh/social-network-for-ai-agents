@@ -21,7 +21,7 @@ AGENTS = [
         "slug": "swiggy",
         "org_domain": "swiggy.com",
         "industry_vertical": "food_delivery",
-        "webhook_url": "http://localhost:8000/mock-agents/swiggy/webhook",
+        "webhook_url": f"{settings.PUBLIC_API_URL}/mock-agents/swiggy/webhook",
         "persona_prompt": (
             "You are Swiggy's AI partnership agent. You represent Swiggy's brand in a professional, "
             "friendly manner. When you see relevant offers about payments, cashback, or complementary "
@@ -40,7 +40,7 @@ AGENTS = [
         "slug": "flipkart",
         "org_domain": "flipkart.com",
         "industry_vertical": "ecommerce",
-        "webhook_url": "http://localhost:8000/mock-agents/flipkart/webhook",
+        "webhook_url": f"{settings.PUBLIC_API_URL}/mock-agents/flipkart/webhook",
         "persona_prompt": (
             "You are Flipkart's AI commerce agent. You focus on retail partnerships, EMI/BNPL "
             "financing, logistics, and festive sale promotions. Reply with business-relevant "
@@ -58,7 +58,7 @@ AGENTS = [
         "slug": "phonepe",
         "org_domain": "phonepe.com",
         "industry_vertical": "fintech_payments",
-        "webhook_url": "http://localhost:8000/mock-agents/phonepe/webhook",
+        "webhook_url": f"{settings.PUBLIC_API_URL}/mock-agents/phonepe/webhook",
         "persona_prompt": (
             "You are PhonePe's AI fintech agent. You champion UPI payments, merchant cashback, "
             "and seamless checkout experiences. When you see relevant food delivery, e-commerce, "
@@ -77,7 +77,7 @@ AGENTS = [
         "slug": "hdfc",
         "org_domain": "hdfcbank.com",
         "industry_vertical": "banking_cards",
-        "webhook_url": "http://localhost:8000/mock-agents/hdfc/webhook",
+        "webhook_url": f"{settings.PUBLIC_API_URL}/mock-agents/hdfc/webhook",
         "persona_prompt": (
             "You are HDFC Bank's AI banking agent. You promote credit card instant discounts, "
             "co-branded EMI campaigns, and dining/shopping tie-ups. Reply with authoritative, "
@@ -96,7 +96,7 @@ AGENTS = [
         "slug": "bajaj-auto",
         "org_domain": "bajajauto.com",
         "industry_vertical": "automotive",
-        "webhook_url": "http://localhost:8000/mock-agents/bajaj-auto/webhook",
+        "webhook_url": f"{settings.PUBLIC_API_URL}/mock-agents/bajaj-auto/webhook",
         "persona_prompt": (
             "You are Bajaj Auto's AI mobility agent. You focus on two-wheeler launches, EV charging "
             "infrastructure, auto loan partnerships, and commuter fuel efficiency. Reply with "

@@ -1,0 +1,56 @@
+services:
+  - type: keyvalue
+    name: social-network-redis
+    region: singapore
+    plan: free
+    ipAllowList: []
+
+  - type: web
+    name: social-network-api
+    runtime: python
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: alembic upgrade head && python seed.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: DATABASE_URL
+        fromDatabase:
+          name: social-network-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: social-network-redis
+          property: connectionString
+      - key: PUBLIC_API_URL
+        value: https://social-network-api.onrender.com
+      - key: CORS_ORIGINS
+        value: https://social-network-web.onrender.com
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FAST_DEV_MODE
+        value: "true"
+
+  - type: web
+    name: social-network-web
+    runtime: node
+    region: singapore
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start -- --hostname 0.0.0.0 --port $PORT
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://social-network-api.onrender.com
+
+databases:
+  - name: social-network-db
+    region: singapore
+    plan: free
+    ipAllowList: []
+    databaseName: agentsocial
+    user: agentsocial
+    postgresMajorVersion: "16"

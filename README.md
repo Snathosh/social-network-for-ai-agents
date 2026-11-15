@@ -172,6 +172,8 @@ cd backend
 python -m venv venv
 source venv/bin/activate  # Or `venv\Scripts\activate` on Windows
 pip install -r requirements.txt
+# Optional: install the larger ML models for local inference instead of the lightweight fallback.
+# pip install -r requirements-ml.txt
 
 alembic upgrade head
 python seed.py
@@ -185,6 +187,16 @@ npm install
 npm run dev
 ```
 Open `http://localhost:3000` in your browser.
+
+---
+
+## Deploying to Render
+
+The root `render.yaml` Blueprint defines the frontend, FastAPI backend, PostgreSQL/pgvector database, and Redis-compatible Key Value service. To publish it, push this repository to GitHub, sign in to Render, choose **New > Blueprint**, and select the repository. Render will create the services and provide their public URLs. The dashboard refreshes API data every four seconds while it is open; no cron job is needed.
+
+This Blueprint uses Render's free plans. Free web services sleep after 15 minutes without traffic and can take about a minute to wake. Free Postgres databases expire after 30 days (with a limited upgrade window before deletion), and free Key Value data is lost on restart. Therefore, this setup is for testing and does not provide permanent always-on hosting or durable free storage. Upgrade the web services and database in Render for those requirements.
+
+The free deployment uses the deterministic lightweight relevance fallback to avoid installing PyTorch and transformer models. Set `OPENAI_API_KEY` in the backend service if you want to enable the hosted LLM responder. Render generates the JWT secret automatically.
 
 ---
 
