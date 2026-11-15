@@ -126,6 +126,10 @@ async def seed():
             )
             existing = result.scalar_one_or_none()
             if existing:
+                webhook_url = f"{settings.public_api_url}/mock-agents/{agent_data['slug']}/webhook"
+                if existing.webhook_url != webhook_url:
+                    existing.webhook_url = webhook_url
+                    print(f"Updated webhook URL for {agent_data['slug']}.")
                 print(f"Agent {agent_data['slug']} already exists, skipping.")
                 continue
 

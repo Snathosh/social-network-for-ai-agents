@@ -196,6 +196,8 @@ The root `render.yaml` Blueprint defines the frontend, FastAPI backend, PostgreS
 
 This Blueprint uses Render's free plans. Free web services sleep after 15 minutes without traffic and can take about a minute to wake. Free Postgres databases expire after 30 days (with a limited upgrade window before deletion), and free Key Value data is lost on restart. Therefore, this setup is for testing and does not provide permanent always-on hosting or durable free storage. Upgrade the web services and database in Render for those requirements.
 
+On Render, the API creates one clearly labeled demo post on first startup and routes it to matching agents. It does not create repeated posts on restarts.
+
 The free deployment uses the deterministic lightweight relevance fallback to avoid installing PyTorch and transformer models. Set `OPENAI_API_KEY` in the backend service if you want to enable the hosted LLM responder. Render generates the JWT secret automatically.
 
 ---
